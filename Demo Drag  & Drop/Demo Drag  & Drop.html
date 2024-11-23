@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo HTML5 Drag & Drop </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+
+        #dragElement {
+            width: 100px;
+            height: 100px;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            cursor: grab;
+        }
+
+        #dropZone {
+            width: 200px;
+            height: 200px;
+            border: 2px dashed #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #dropZone.hover {
+            background-color: #e0ffe0;
+        }
+
+        #fileDropZone {
+            width: 100%;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px dashed #007BFF;
+            background-color: #F0F8FF;
+            text-align: center;
+        }
+
+        #fileDropZone.hover {
+            background-color: #D0EFFF;
+        }
+
+        #fileList {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            background: #e8f4fa;
+            border: 1px solid #007BFF;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        #dragImage {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>HTML5 Drag & Drop </h1>
+
+    <p>
+        Kéo hộp màu xanh lá cây và thả vào vùng thả để kiểm tra chức năng kéo và thả. Ngoài ra, thử kéo tệp vào khu vực upload file bên dưới.
+    </p>
+
+    <!-- Vùng kéo và thả phần tử -->
+    <div id="dragElement" draggable="true">Kéo tôi</div>
+    <div id="dropZone">Vùng thả</div>
+
+    <!-- Vùng kéo và thả tệp -->
+    <div id="fileDropZone">Kéo tệp vào đây để tải lên</div>
+    <div id="fileList"></div>
+
+    <img id="dragImage" src="https://via.placeholder.com/80" alt="Drag Image" />
+
+    <script>
+        // Kéo và thả phần tử
+        const dragElement = document.getElementById('dragElement');
+        const dropZone = document.getElementById('dropZone');
+        const dragImage = document.getElementById('dragImage');
+
+        dragElement.addEventListener('dragstart', (event) => {
+            event.dataTransfer.setData('text/plain', dragElement.id);
+            event.dataTransfer.setDragImage(dragImage, 20, 20);
+            event.dataTransfer.effectAllowed = "move";
+        });
+
+        dropZone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropZone.classList.add('hover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('hover');
+        });
+
+        dropZone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropZone.classList.remove('hover');
+            const data = event.dataTransfer.getData('text/plain');
+            const draggedElement = document.getElementById(data);
+            dropZone.appendChild(draggedElement);
+        });
+
+        // Kéo và thả tệp
+        const fileDropZone = document.getElementById('fileDropZone');
+        const fileList = document.getElementById('fileList');
+
+        fileDropZone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            fileDropZone.classList.add('hover');
+        });
+
+        fileDropZone.addEventListener('dragleave', () => {
+            fileDropZone.classList.remove('hover');
+        });
+
+        fileDropZone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            fileDropZone.classList.remove('hover');
+
+            // Lấy danh sách các tệp đã kéo
+            const files = event.dataTransfer.files;
+            fileList.innerHTML = ""; // Xóa danh sách cũ
+
+            // Duyệt qua các tệp và hiển thị thông tin
+            for (const file of files) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.textContent = `Tên: ${file.name} - Kích thước: ${(file.size / 1024).toFixed(2)} KB`;
+                fileList.appendChild(fileItem);
+            }
+        });
+    </script>
+</body>
+</html>
